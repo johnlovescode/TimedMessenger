@@ -13,7 +13,7 @@ public class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     Context context;
     String[] items;
 
-    public Adapter(Context context, String[] items)
+    public Adapter(String[] items)
     {
         this.context=context;
         this.items = items;
@@ -21,7 +21,7 @@ public class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        LayoutInflater inflater = LayoutInflater.from(context);
+        LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
         View row = inflater.inflate(R.layout.costume_row, null,false);
         Item item = new Item(row);
         return item;
