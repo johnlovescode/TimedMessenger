@@ -7,17 +7,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.database.Cursor;
 
 public class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    Context context;
-    String[] items;
 
-    public Adapter(String[] items)
+    private Cursor cursor;
+
+    public Adapter(Cursor cursor)
     {
-        this.context=context;
-        this.items = items;
+        this.cursor = cursor;
+
     }
+
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
@@ -29,7 +31,7 @@ public class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position) {
-        ((Item)viewHolder).textView.setText(items[position]);
+        viewHolder.setText();
     }
 
     @Override
@@ -37,12 +39,22 @@ public class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         return items.length;
     }
 
+
+
+
+
+
     public class Item extends RecyclerView.ViewHolder
     {
-        TextView textView;
+        private TextView textView;
         public Item(@NonNull View itemView) {
             super(itemView);
             textView=(TextView) itemView.findViewById(R.id.item);
+        }
+
+        public void setText(String text)
+        {
+            textView.setText(text);
         }
     }
 }
