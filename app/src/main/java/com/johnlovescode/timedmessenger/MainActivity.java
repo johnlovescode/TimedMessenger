@@ -17,7 +17,7 @@ public class MainActivity extends AppCompatActivity {
     DBAdapter db;
 
 
-    String[] Items={"item1","item2","item1","item2","item1","item2","item1","item2","item1","item2","item1","item2","item1","item2","item1","item2"};
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                Snackbar.make(view, "Send to new fragment to add a new message", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
         });

@@ -29,7 +29,6 @@ public class DBAdapter extends SQLiteOpenHelper
     private static final String FIELD_CONTACT_NAME = "contact_name";
     private static final String FIELD_CONTACT_NUMBER = "contact_number";
 
-    //private static final String FIELD_NEXT_MESSAGE = "nextmessage";
 
     private static final int DATABASE_VERSION = 1;
 
@@ -41,13 +40,23 @@ public class DBAdapter extends SQLiteOpenHelper
     @Override
     public void onCreate(SQLiteDatabase db)
     {
+
         db.execSQL("Create table "+TABLE_MESSAGE+" ("+
                 FIELD_MESSAGE_ID+" integer Primary Key," +
-                FIELD_MESSAGE +" text,"+
-                FIELD_NEXT_MESSAGE+ " integer,"+
-                FIELD_TIME_TO_BE_SENT+ " Date,"+
-                "Foreign Key("+FIELD_NEXT_MESSAGE+") References "+TABLE_MESSAGE+"("+FIELD_MESSAGE_ID+")" +
+                FIELD_SUBJECT+"text,"+
+                FIELD_TIME_TO_BE_SENT+ " Date"+
                 ");");
+        db.execSQL("Create table "+TABLE_CONTENTS+" ("+
+                "content_id integer ," +
+                FIELD_ORDER+"integer,"+
+                FIELD_MESSAGE_TEXT+ " text,"+
+                "Foreign Key(content_id) References "+TABLE_MESSAGE+"("+FIELD_MESSAGE_ID+"));");
+        db.execSQL("Create table "+TABLE_RECIPIENTS+" ("+
+                "recipient_id integer ," +
+                FIELD_CONTACT_NAME+"text,"+
+                FIELD_CONTACT_NUMBER+ " text,"+
+                "Foreign Key(recipient_id) References "+TABLE_MESSAGE+"("+FIELD_MESSAGE_ID+"));");
+
     }
 
     @Override
@@ -117,6 +126,7 @@ public class DBAdapter extends SQLiteOpenHelper
      */
     public Cursor getMessageList()
     {
+
         //TODO add sortability and remove raw query
         String query = "Select * from Message;";
         SQLiteDatabase db = getReadableDatabase();
