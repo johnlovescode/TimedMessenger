@@ -10,9 +10,13 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.SimpleCursorAdapter;
 
 public class MainActivity extends AppCompatActivity {
     RecyclerView recyclerView;
+    DBAdapter db;
+
+
     String[] Items={"item1","item2","item1","item2","item1","item2","item1","item2","item1","item2","item1","item2","item1","item2","item1","item2"};
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.content_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        db = new DBAdapter(this);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.floatingActionButton);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -31,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
         });
         recyclerView =(RecyclerView) findViewById(R.id.recyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(new Adapter(Items));
+        recyclerView.setAdapter(new Adapter(db));
     }
 
     @Override
@@ -55,4 +60,11 @@ public class MainActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+    //TODO method to call when messages change
+    public void updateMessageList()
+    {
+        //SimpleCursorAdapter sca = new SimpleCursorAdapter();
+    }
+
+
 }

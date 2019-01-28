@@ -11,11 +11,25 @@ public class DBAdapter extends SQLiteOpenHelper
 {
     private static final String DATABASE_NAME = "TimedMessenger.db";
     private static final String TABLE_MESSAGE = "message";
+    private static final String TABLE_RECIPIENTS = "recipients";
+    private static final String TABLE_CONTENTS = "contents";
 
+    //message table fields
     private static final String FIELD_MESSAGE_ID = "message_id";
-    private static final String FIELD_MESSAGE = "message_text";
     private static final String FIELD_TIME_TO_BE_SENT = "timetobesent";
-    private static final String FIELD_NEXT_MESSAGE = "nextmessage";
+    private static final String FIELD_SUBJECT = "subject";
+
+    //contents table fields
+    //id field that is a foreign key of message table primary key
+    private static final String FIELD_MESSAGE_TEXT = "message_text";
+    private static final String FIELD_ORDER = "order";
+
+    //recipients table fields
+    //id field that is a foreign key of message table primary key
+    private static final String FIELD_CONTACT_NAME = "contact_name";
+    private static final String FIELD_CONTACT_NUMBER = "contact_number";
+
+    //private static final String FIELD_NEXT_MESSAGE = "nextmessage";
 
     private static final int DATABASE_VERSION = 1;
 
