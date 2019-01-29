@@ -7,6 +7,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.Nullable;
 
+import java.util.ArrayList;
+
 public class DBAdapter extends SQLiteOpenHelper
 {
     private static final String DATABASE_NAME = "TimedMessenger.db";
@@ -20,17 +22,18 @@ public class DBAdapter extends SQLiteOpenHelper
     private static final String FIELD_SUBJECT = "subject";
 
     //contents table fields
-    //id field that is a foreign key of message table primary key
+    private static final String FIELD_CONTENT_ID = "content_id";
     private static final String FIELD_MESSAGE_TEXT = "message_text";
     private static final String FIELD_ORDER = "order";
 
     //recipients table fields
-    //id field that is a foreign key of message table primary key
+    private static final String FIELD_RECIPIENT_ID = "recipient_id";
     private static final String FIELD_CONTACT_NAME = "contact_name";
     private static final String FIELD_CONTACT_NUMBER = "contact_number";
 
-
     private static final int DATABASE_VERSION = 1;
+
+
 
     public DBAdapter(@Nullable Context context)
     {
@@ -47,89 +50,116 @@ public class DBAdapter extends SQLiteOpenHelper
                 FIELD_TIME_TO_BE_SENT+ " Date"+
                 ");");
         db.execSQL("Create table "+TABLE_CONTENTS+" ("+
-                "content_id integer ," +
+                FIELD_CONTENT_ID+" integer ," +
                 FIELD_ORDER+"integer,"+
                 FIELD_MESSAGE_TEXT+ " text,"+
-                "Foreign Key(content_id) References "+TABLE_MESSAGE+"("+FIELD_MESSAGE_ID+"));");
+                "Foreign Key("+FIELD_CONTENT_ID+") References "+TABLE_MESSAGE+"("+FIELD_MESSAGE_ID+"));");
         db.execSQL("Create table "+TABLE_RECIPIENTS+" ("+
-                "recipient_id integer ," +
+                FIELD_RECIPIENT_ID+" integer ," +
                 FIELD_CONTACT_NAME+"text,"+
                 FIELD_CONTACT_NUMBER+ " text,"+
-                "Foreign Key(recipient_id) References "+TABLE_MESSAGE+"("+FIELD_MESSAGE_ID+"));");
+                "Foreign Key("+FIELD_RECIPIENT_ID+") References "+TABLE_MESSAGE+"("+FIELD_MESSAGE_ID+"));");
 
     }
 
     @Override
-    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1)
+    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion)
     {
         //TODO add upgrade
     }
 
 
-    public int updateRecord(long id, String subject, String time,String[] contactNames,String[] contactNumber, String messageText)
+    public int updateRecord(Message m)
     {
         SQLiteDatabase db = getWritableDatabase();
 
-        Message m = new Message();
-        //TODO change this from updating to deleting old and inserting new?
-        //TODO change method arguments to accept message class instead of long list of arguments
+
+
         //TODO try using transactions?
-        db.delete(TABLE_CONTENTS,"content_id=?",new String[]{String.valueOf(id)});
-        db.delete(TABLE_RECIPIENTS,"recipient_id=?",new String[]{String.valueOf(id)});
+        db.delete(TABLE_CONTENTS,FIELD_CONTENT_ID+"=?",new String[]{String.valueOf(m.getId())});
+        db.delete(TABLE_RECIPIENTS,FIELD_RECIPIENT_ID+"=?",new String[]{String.valueOf(m.getId())});
 
         ContentValues values = new ContentValues();
-        values.put(FIELD_MESSAGE_ID, id);
-        values.put(FIELD_SUBJECT, subject);
-        values.put(FIELD_TIME_TO_BE_SENT, time);
-        db.update(TABLE_CONTENTS, values, "_id = ?", new String[]{String.valueOf(id)});
-        for(int i = 0;i<contactNames.length;i++)
+        values.put(FIELD_MESSAGE_ID, m.getId());
+        values.put(FIELD_SUBJECT, m.getSubject());
+        values.put(FIELD_TIME_TO_BE_SENT, m.getTimeToBeSent().toString());
+        db.update(TABLE_MESSAGE, values, FIELD_MESSAGE_ID+" = ?", new String[]{String.valueOf(m.getId())});
+        for(int i = 0;i<m.getContactNames().length;i++)
         {
             values = new ContentValues();
-            values.put("recipient_id", id);
-            values.put(FIELD_CONTACT_NAME, contactNames[i]);
-            values.put(FIELD_CONTACT_NUMBER, contactNumber[i]);
-            db.update(TABLE_RECIPIENTS, values,"recipient_id=?",new String[]{String.valueOf(id)});
+            values.put(FIELD_RECIPIENT_ID, m.getId());
+            values.put(FIELD_CONTACT_NAME, m.getContactNames()[i]);
+            values.put(FIELD_CONTACT_NUMBER, m.getContactNumber()[i]);
+            db.insert(TABLE_RECIPIENTS,null, values);
         }
-        m.setMessageText(messageText);
+
         for(int i = 0;i<m.getMessageText().length;i++)
         {
             values = new ContentValues();
-            values.put("content_id", id);
+            values.put(FIELD_CONTENT_ID, m.getId());
             values.put(FIELD_ORDER, i+1);
             values.put(FIELD_MESSAGE_TEXT, m.getMessageText()[i]);
-            db.update(TABLE_RECIPIENTS, values,"content_id=?",new String[]{String.valueOf(id)});
+            db.insert(TABLE_CONTENTS, null, values);
         }
-
+        db.close();
+        return 1;
 
     }
-    public long addRecord(String message, String time)
+    public long addRecord(Message message)
     {
         SQLiteDatabase db = getWritableDatabase();
-        //TODO add message parsing to add long messages to the db in 160 character chunks
-
-
 
         ContentValues values = new ContentValues();
+        //TODO add parsing for DATETIME for ease of use
+        //insert into main table
+        //doesn't have an id yet, database will assign
+        //values.put(FIELD_MESSAGE_ID, message.getId());
+        values.put(FIELD_TIME_TO_BE_SENT,message.getTimeToBeSent().toString());
+        values.put(FIELD_SUBJECT,message.getSubject());
+        message.setId(db.insert(TABLE_MESSAGE, null, values));
 
-        values.put(FIELD_MESSAGE, message);
-        values.put(FIELD_TIME_TO_BE_SENT, time);
-        return db.insert(TABLE_MESSAGE, null, values);
+        //set recipients table
+        for(int i=0;i<message.getContactNumber().length;i++)
+        {
+            values = new ContentValues();
+            values.put(FIELD_RECIPIENT_ID, message.getId());
+            values.put(FIELD_CONTACT_NAME,message.getContactNames()[i]);
+            values.put(FIELD_CONTACT_NUMBER,message.getContactNumber()[i]);
+            db.insert(TABLE_RECIPIENTS,null,values);
+        }
+
+        //set contents table
+        for(int i=0;i<message.getMessageText().length;i++)
+        {
+            values = new ContentValues();
+            values.put(FIELD_CONTENT_ID, message.getId());
+            values.put(FIELD_MESSAGE_TEXT,message.getMessageText()[i]);
+            values.put("order",i+1);
+            db.insert(TABLE_CONTENTS,null,values);
+        }
+        db.close();
+
+        return 1;
     }
 
     public int deleteRecord(int id)
     {
         SQLiteDatabase db = getWritableDatabase();
-        return db.delete(TABLE_MESSAGE, "_id = ?", new String[]{String.valueOf(id)});
+        db.delete(TABLE_MESSAGE, FIELD_MESSAGE_ID+"= ?", new String[]{String.valueOf(id)});
+        db.delete(TABLE_CONTENTS,FIELD_CONTENT_ID+"=?", new String[]{String.valueOf(id)});
+        db.delete(TABLE_RECIPIENTS,FIELD_RECIPIENT_ID+"=?", new String[]{String.valueOf(id)});
+        db.close();
+        return 1;
     }
 
     //TODO do i really need this?
-    public void saveRecord(long id, String message, String date) {
-        //long id = findMessageID(message);
+    public void saveRecord(Message m) {
 
-        if (id>0) {
-            updateRecord(id, message,date);
+
+        if (m.getId()>0) {
+            updateRecord(m);
         } else {
-            addRecord(message,date);
+            addRecord(m);
         }
     }
 
@@ -137,25 +167,73 @@ public class DBAdapter extends SQLiteOpenHelper
     *   return values associated with this message id
     *
      */
-    public Cursor getMessage(long id)
+    public Message getMessage(long id)
     {
-        //TODO add ability to return long messages associated with this id
-        String query = "Select * from Message where message_id="+id+";";
+
+        String query = "Select * from "+TABLE_MESSAGE+" where "+FIELD_MESSAGE_ID+"="+id;
         SQLiteDatabase db = getReadableDatabase();
-        return db.rawQuery(query,null);
+        Cursor cursor= db.rawQuery(query,null);
+        Message retVal= new Message();
+        retVal.setId(cursor.getLong(cursor.getColumnIndex(FIELD_MESSAGE_ID)));
+        retVal.setSubject(cursor.getString(cursor.getColumnIndex(FIELD_SUBJECT)));
+        retVal.setTimeToBeSent(cursor.getString(cursor.getColumnIndex(FIELD_TIME_TO_BE_SENT)));
+        query = "Select * from "+TABLE_CONTENTS+" where "+FIELD_CONTENT_ID+"="+id+"Sort by order asc";
+        cursor.close();
+        cursor= db.rawQuery(query,null);
+        String[] temp= new String[cursor.getCount()];
+        for(int i =0;i<cursor.getCount();i++)
+        {
+            temp[i]=cursor.getString(cursor.getColumnIndex(FIELD_MESSAGE_TEXT));
+            cursor.moveToNext();
+        }
+        retVal.setMessageText(temp);
+        cursor.close();
+        query = "Select * from "+TABLE_RECIPIENTS+" where "+FIELD_RECIPIENT_ID+"="+id;
+        cursor= db.rawQuery(query,null);
+        temp = new String[cursor.getCount()];
+        String[] temp2 = new String[cursor.getCount()];
+        for(int i = 0;i<cursor.getCount();i++)
+        {
+            temp[i]=cursor.getString(cursor.getColumnIndex(FIELD_CONTACT_NAME));
+            temp2[i]=cursor.getString(cursor.getColumnIndex(FIELD_CONTACT_NUMBER));
+            cursor.moveToNext();
+        }
+        cursor.close();
+        retVal.setContactNames(temp);
+        retVal.setContactNumber(temp2);
+        db.close();
+        return retVal;
 
     }
     /*
     *   return a list of all messages stored in the database
     *
      */
-    public Cursor getMessageList()
+    public Message[] getMessageList()
     {
 
         //TODO add sortability and remove raw query
         String query = "Select * from Message;";
         SQLiteDatabase db = getReadableDatabase();
-        return db.rawQuery(query,null);
+        ArrayList<Message> retVal=new ArrayList<>();
+        Cursor cursor =db.rawQuery(query,null);
+        //TODO is this needed everywhere?
+        cursor.moveToFirst();
+        for(int i = 0;i<cursor.getCount();i++)
+        {
+            Message temp = new Message();
+            temp.setId(cursor.getLong(cursor.getColumnIndex(FIELD_MESSAGE_ID)));
+            retVal.add(temp);
+            cursor.moveToNext();
+        }
+        cursor.close();
+        db.close();
+        for(int i =0;i<retVal.size();i++)
+        {
+            retVal.set(i,getMessage(retVal.get(i).getId()));
+        }
+
+        return retVal.toArray(new Message[0]);
     }
 
 }

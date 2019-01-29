@@ -1,6 +1,8 @@
 package com.johnlovescode.timedmessenger;
 
-import java.sql.Date;
+import java.text.ParsePosition;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -25,12 +27,21 @@ public class Message
 
     public Date getTimeToBeSent()
     {
+        //TODO check the output of toString for correctness
+        timeToBeSent.toString();
         return timeToBeSent;
     }
 
     public void setTimeToBeSent(Date timeToBeSent)
     {
         this.timeToBeSent = timeToBeSent;
+    }
+
+    public void setTimeToBeSent(String timeToBeSent)
+    {
+        //TODO check formatting/parsing correctness
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        this.timeToBeSent = sdf.parse(timeToBeSent,new ParsePosition(0));
     }
 
     public String getSubject()
@@ -82,6 +93,11 @@ public class Message
             }
             this.messageText = messageArray.toArray(new String[0]);
         }
+    }
+
+    public void setMessageText(String[] messageText)
+    {
+        this.messageText = messageText;
     }
 
     public Message(long id, Date timeToBeSent, String subject, String[] contactNames, String[] contactNumber, String messageText)

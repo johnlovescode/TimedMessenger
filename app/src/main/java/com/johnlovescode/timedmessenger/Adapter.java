@@ -34,13 +34,13 @@ public class Adapter extends RecyclerView.Adapter<Adapter.Item> {
         //set the text to the message from the database
         //TODO figure out a way to add a non visible field to store message_ID so it can be used instead of position for querying
         //TODO this wont work fix quick
-        viewHolder.setText(db.getMessage((long)position).getString(1));
+        viewHolder.setText(db.getMessage((long)position).getSubject());
 
     }
 
     @Override
     public int getItemCount() {
-        return db.getMessageList().getCount();
+        return db.getMessageList().length;
     }
 
 
