@@ -66,16 +66,41 @@ public class DBAdapter extends SQLiteOpenHelper
     }
 
 
-    public int updateRecord(long id, String message, String time)
+    public int updateRecord(long id, String subject, String time,String[] contactNames,String[] contactNumber, String messageText)
     {
         SQLiteDatabase db = getWritableDatabase();
-        //TODO add message parsing to overwrite long messages
+
+        Message m = new Message();
+        //TODO change this from updating to deleting old and inserting new?
+        //TODO change method arguments to accept message class instead of long list of arguments
+        //TODO try using transactions?
+        db.delete(TABLE_CONTENTS,"content_id=?",new String[]{String.valueOf(id)});
+        db.delete(TABLE_RECIPIENTS,"recipient_id=?",new String[]{String.valueOf(id)});
 
         ContentValues values = new ContentValues();
         values.put(FIELD_MESSAGE_ID, id);
-        values.put(FIELD_MESSAGE, message);
+        values.put(FIELD_SUBJECT, subject);
         values.put(FIELD_TIME_TO_BE_SENT, time);
-        return db.update(TABLE_MESSAGE, values, "_id = ?", new String[]{String.valueOf(id)});
+        db.update(TABLE_CONTENTS, values, "_id = ?", new String[]{String.valueOf(id)});
+        for(int i = 0;i<contactNames.length;i++)
+        {
+            values = new ContentValues();
+            values.put("recipient_id", id);
+            values.put(FIELD_CONTACT_NAME, contactNames[i]);
+            values.put(FIELD_CONTACT_NUMBER, contactNumber[i]);
+            db.update(TABLE_RECIPIENTS, values,"recipient_id=?",new String[]{String.valueOf(id)});
+        }
+        m.setMessageText(messageText);
+        for(int i = 0;i<m.getMessageText().length;i++)
+        {
+            values = new ContentValues();
+            values.put("content_id", id);
+            values.put(FIELD_ORDER, i+1);
+            values.put(FIELD_MESSAGE_TEXT, m.getMessageText()[i]);
+            db.update(TABLE_RECIPIENTS, values,"content_id=?",new String[]{String.valueOf(id)});
+        }
+
+
     }
     public long addRecord(String message, String time)
     {
