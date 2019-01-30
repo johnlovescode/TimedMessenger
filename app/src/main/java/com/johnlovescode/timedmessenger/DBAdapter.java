@@ -17,9 +17,9 @@ public class DBAdapter extends SQLiteOpenHelper
     private static final String TABLE_CONTENTS = "contents";
 
     //message table fields
-    private static final String FIELD_MESSAGE_ID = "message_id";
-    private static final String FIELD_TIME_TO_BE_SENT = "timetobesent";
-    private static final String FIELD_SUBJECT = "subject";
+    public static final String FIELD_MESSAGE_ID = "message_id";
+    public static final String FIELD_TIME_TO_BE_SENT = "timetobesent";
+    public static final String FIELD_SUBJECT = "subject";
 
     //contents table fields
     private static final String FIELD_CONTENT_ID = "content_id";
@@ -45,9 +45,9 @@ public class DBAdapter extends SQLiteOpenHelper
     {
 
         db.execSQL("Create table "+TABLE_MESSAGE+" ("+
-                FIELD_MESSAGE_ID+" integer Primary Key," +
+                FIELD_MESSAGE_ID+" integer Primary Key Autoincrement," +
                 FIELD_SUBJECT+"text,"+
-                FIELD_TIME_TO_BE_SENT+ " Date"+
+                FIELD_TIME_TO_BE_SENT+ " text"+
                 ");");
         db.execSQL("Create table "+TABLE_CONTENTS+" ("+
                 FIELD_CONTENT_ID+" integer ," +
@@ -236,4 +236,20 @@ public class DBAdapter extends SQLiteOpenHelper
         return retVal.toArray(new Message[0]);
     }
 
+    public int getMessageListLength()
+    {
+        String query = "Select * from Message;";
+        SQLiteDatabase db = getReadableDatabase();
+        int temp =db.rawQuery(query,null).getCount();
+        db.close();
+        return temp;
+    }
+
+    public Cursor getMessageListShort()
+    {
+        String query = "Select * from Message;";
+        SQLiteDatabase db = getReadableDatabase();
+
+        return db.rawQuery(query,null);
+    }
 }

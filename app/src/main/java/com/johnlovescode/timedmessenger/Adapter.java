@@ -13,11 +13,12 @@ public class Adapter extends RecyclerView.Adapter<Adapter.Item> {
 
 
     private DBAdapter db;
+    private Cursor c;
 
     public Adapter(DBAdapter db)
     {
         this.db = db;
-
+        c = db.getMessageListShort();
     }
 
     @NonNull
@@ -32,15 +33,15 @@ public class Adapter extends RecyclerView.Adapter<Adapter.Item> {
     @Override
     public void onBindViewHolder(@NonNull Item viewHolder, int position) {
         //set the text to the message from the database
-        //TODO figure out a way to add a non visible field to store message_ID so it can be used instead of position for querying
-        //TODO this wont work fix quick
-        viewHolder.setText(db.getMessage((long)position).getSubject());
+
+        c.moveToPosition(position);
+        viewHolder.setText(c.getString(c.getColumnIndex(DBAdapter.FIELD_SUBJECT)),c.getLong(c.getColumnIndex(DBAdapter.FIELD_MESSAGE_ID)),c.getString(c.getColumnIndex(DBAdapter.FIELD_TIME_TO_BE_SENT)));
 
     }
 
     @Override
     public int getItemCount() {
-        return db.getMessageList().length;
+        return db.getMessageListLength();
     }
 
 
@@ -50,15 +51,24 @@ public class Adapter extends RecyclerView.Adapter<Adapter.Item> {
 
     public class Item extends RecyclerView.ViewHolder
     {
-        public TextView textView;
+        private TextView textView;
+        private TextView id;
+        private TextView date;
         public Item(@NonNull View itemView) {
             super(itemView);
             textView=(TextView) itemView.findViewById(R.id.item);
+            id = (TextView) itemView.findViewById(R.id.messageId);
+            date = (TextView) itemView.findViewById(R.id.dateLabel);
         }
 
-        public void setText(String text)
+        public void setText(String text, long id,String date)
         {
             textView.setText(text);
+            this.id.setText(String.valueOf(id));
+            this.id.setVisibility(View.INVISIBLE);
+            this.date.setText(date);
         }
+
+
     }
 }
