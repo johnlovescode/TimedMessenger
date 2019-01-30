@@ -76,6 +76,7 @@ public class DBAdapter extends SQLiteOpenHelper
 
 
         //TODO try using transactions?
+        //TODO need try/catch
         db.delete(TABLE_CONTENTS,FIELD_CONTENT_ID+"=?",new String[]{String.valueOf(m.getId())});
         db.delete(TABLE_RECIPIENTS,FIELD_RECIPIENT_ID+"=?",new String[]{String.valueOf(m.getId())});
 
@@ -112,7 +113,7 @@ public class DBAdapter extends SQLiteOpenHelper
         ContentValues values = new ContentValues();
         //TODO add parsing for DATETIME for ease of use
         //insert into main table
-        //doesn't have an id yet, database will assign
+
         //values.put(FIELD_MESSAGE_ID, message.getId());
         values.put(FIELD_TIME_TO_BE_SENT,message.getTimeToBeSent().toString());
         values.put(FIELD_SUBJECT,message.getSubject());
