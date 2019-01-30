@@ -10,30 +10,36 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.SimpleCursorAdapter;
 
 public class MainActivity extends AppCompatActivity {
     RecyclerView recyclerView;
-    String[] Items={"item1","item2","item1","item2","item1","item2","item1","item2","item1","item2","item1","item2","item1","item2","item1","item2"};
+    DBAdapter db;
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.content_main);
+        //TODO add toolbar/Menu? diff between the two
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        db = new DBAdapter(this);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.floatingActionButton);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                Snackbar.make(view, "Send to new fragment to add a new message", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
         });
         recyclerView =(RecyclerView) findViewById(R.id.recyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(new Adapter(Items));
+        recyclerView.setAdapter(new Adapter(db));
     }
-
+    //TODO add menu
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -55,4 +61,12 @@ public class MainActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+    //TODO method to call when messages change
+    //TODO do i still need this?
+    public void updateMessageList()
+    {
+        //SimpleCursorAdapter sca = new SimpleCursorAdapter();
+    }
+
+
 }

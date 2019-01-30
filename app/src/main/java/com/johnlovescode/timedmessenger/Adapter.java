@@ -7,42 +7,68 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.database.Cursor;
 
-public class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class Adapter extends RecyclerView.Adapter<Adapter.Item> {
 
-    Context context;
-    String[] items;
 
-    public Adapter(String[] items)
+    private DBAdapter db;
+    private Cursor c;
+
+    public Adapter(DBAdapter db)
     {
-        this.context=context;
-        this.items = items;
+        this.db = db;
+        c = db.getMessageListShort();
     }
+
     @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+    public Item onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
-        View row = inflater.inflate(R.layout.costume_row, null,false);
+        View row = inflater.inflate(R.layout.costume_row, viewGroup,false);
         Item item = new Item(row);
         return item;
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position) {
-        ((Item)viewHolder).textView.setText(items[position]);
+    public void onBindViewHolder(@NonNull Item viewHolder, int position) {
+        //set the text to the message from the database
+
+        c.moveToPosition(position);
+        viewHolder.setText(c.getString(c.getColumnIndex(DBAdapter.FIELD_SUBJECT)),c.getLong(c.getColumnIndex(DBAdapter.FIELD_MESSAGE_ID)),c.getString(c.getColumnIndex(DBAdapter.FIELD_TIME_TO_BE_SENT)));
+
     }
 
     @Override
     public int getItemCount() {
-        return items.length;
+        return db.getMessageListLength();
     }
+
+
+
+
+
 
     public class Item extends RecyclerView.ViewHolder
     {
-        TextView textView;
+        private TextView textView;
+        private TextView id;
+        private TextView date;
         public Item(@NonNull View itemView) {
             super(itemView);
             textView=(TextView) itemView.findViewById(R.id.item);
+            id = (TextView) itemView.findViewById(R.id.messageId);
+            date = (TextView) itemView.findViewById(R.id.dateLabel);
         }
+
+        public void setText(String text, long id,String date)
+        {
+            textView.setText(text);
+            this.id.setText(String.valueOf(id));
+            this.id.setVisibility(View.INVISIBLE);
+            this.date.setText(date);
+        }
+
+
     }
 }
