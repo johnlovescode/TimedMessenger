@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     tools:context=".EditMessageFragment">
 
-    <!-- TODO: Update blank fragment layout -->
+
 
     <ScrollView
         android:layout_width="match_parent"
@@ -21,18 +21,11 @@
                 android:layout_height="match_parent">
 
                 <android.support.design.widget.TextInputEditText
+                    android:id="@+id/editTextContactName"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:hint="Name" />
-
-                <EditText
-                    android:id="@+id/editTextContactName"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:ems="10"
                     android:hint="Name"
-                    android:inputType="textPersonName"
-                    android:text="Name" />
+                    android:inputType="textPersonName" />
 
 
             </android.support.design.widget.TextInputLayout>
@@ -42,18 +35,12 @@
                 android:layout_height="match_parent">
 
                 <android.support.design.widget.TextInputEditText
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Phone Number" />
-
-                <EditText
                     android:id="@+id/editTextContactNumber"
-                    android:layout_width="wrap_content"
-                    android:layout_height="158dp"
-                    android:ems="10"
-                    android:hint="Number"
-                    android:inputType="phone"
-                    android:text="Number" />
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Phone Number"
+                    android:inputType="phone" />
+
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
@@ -61,17 +48,12 @@
                 android:layout_height="match_parent">
 
                 <android.support.design.widget.TextInputEditText
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Subject" />
-
-                <EditText
                     android:id="@+id/editTextSubject"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:ems="10"
-                    android:inputType="textEmailSubject"
-                    android:text="Name" />
+                    android:hint="Subject"
+                    android:inputType="textEmailSubject" />
+
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
@@ -79,17 +61,12 @@
                 android:layout_height="match_parent">
 
                 <android.support.design.widget.TextInputEditText
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Date/Time" />
-
-                <EditText
                     android:id="@+id/editTextTimeToBeSent"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:ems="10"
-                    android:inputType="date" />
+                    android:hint="Date/Time"
+                    android:inputType="datetime" />
+
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
@@ -97,17 +74,12 @@
                 android:layout_height="match_parent">
 
                 <android.support.design.widget.TextInputEditText
+                    android:id="@+id/editTextMessage"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Message" />
-
-                <EditText
-                    android:id="@+id/editTextMessage"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:ems="10"
+                    android:hint="Message"
                     android:inputType="textMultiLine" />
+
             </android.support.design.widget.TextInputLayout>
 
         </LinearLayout>
